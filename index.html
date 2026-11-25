@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Для тебя">
+<title>Для тебя</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 16px) 16px 30px;transition:background .6s;overflow-x:hidden}
+body.light{background:linear-gradient(#3a9bff,#7cc4ff 45%,#bfe4ff 75%,#ffefc2);color:#1c3a5e}
+body.dark{background:linear-gradient(#04061a,#0b1440 45%,#2a1b5c 80%,#4a2a7a);color:#fff}
+#sun{position:fixed;top:8vh;right:30px;width:76px;height:76px;border-radius:50%;background:#fff3a8;box-shadow:0 0 60px 30px rgba(255,240,150,.5);z-index:0}
+#moon{position:fixed;top:8vh;right:30px;width:64px;height:64px;border-radius:50%;background:#fff6d8;box-shadow:0 0 30px 8px rgba(255,246,216,.4);z-index:0;display:none}
+.dark #sun{display:none}.dark #moon{display:block}
+.cloud{position:fixed;background:#fff;border-radius:60px;opacity:.85;height:40px;z-index:0;animation:drift 60s linear infinite}
+.dark .cloud{display:none}
+@keyframes drift{from{left:-200px}to{left:110vw}}
+.star{position:fixed;background:#fff;border-radius:50%;z-index:0;display:none;animation:tw 2s ease-in-out infinite alternate}
+.dark .star{display:block}
+@keyframes tw{from{opacity:.15}to{opacity:1}}
+.top{width:100%;max-width:380px;display:flex;justify-content:space-between;margin-bottom:14px;z-index:2}
+.chip{background:rgba(255,255,255,.55);border:0;color:inherit;padding:9px 14px;border-radius:20px;font-size:15px;font-weight:600}
+.dark .chip{background:rgba(10,14,40,.55)}
+.card{z-index:2;width:100%;max-width:380px;border-radius:28px;padding:12px;text-align:center;background:rgba(255,255,255,.6)}
+.dark .card{background:rgba(10,14,40,.55)}
+.card img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:22px;display:block}
+#phrase{font-size:20px;font-weight:600;margin:14px 6px 6px;min-height:56px}
+#check{z-index:2;margin-top:22px;border:0;border-radius:34px;padding:16px 32px;font-size:18px;font-weight:700;color:#fff;background:#ff4d7e;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:transform .15s}
+#check.done{background:#34c759}
+#check:active{transform:scale(1.15)}
+.fly{position:fixed;bottom:30px;z-index:5;pointer-events:none;animation:fly var(--d) ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(-15deg);opacity:0}10%{opacity:1}100%{transform:translate(var(--x),-90vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body class="light">
+<div id="sun"></div><div id="moon"></div>
+<div class="cloud" style="top:15vh;width:150px;animation-delay:0s"></div>
+<div class="cloud" style="top:42vh;width:110px;animation-delay:-20s"></div>
+<div class="cloud" style="top:70vh;width:170px;animation-delay:-40s"></div>
+<div class="top">
+<div class="chip" id="streak"></div>
+<button class="chip" id="theme"></button>
+</div>
+<div class="card">
+<img id="photo" alt="">
+<div id="phrase"></div>
+</div>
+<button id="check"></button>
+<script>
+var PHOTOS=[
+'https://i.postimg.cc/18wFBW92/1B591FF0-24C2-4351-917E-B3F324AA3CDC.jpg',
+'https://i.postimg.cc/gnfRv9Pf/312AF8F6-7DDC-4876-B7A4-0C025BA4786C.jpg',
+'https://i.postimg.cc/Lnrfzdpp/66FCDD12-9C50-40D4-9F41-66033A6CC505.jpg',
+'https://i.postimg.cc/XpTFwMbW/992CD8AC-D1E3-48DC-A646-337AADF8CFB0.jpg',
+'https://i.postimg.cc/hfHx9FBc/A0BB2E3D-5363-4235-A91D-424BA5DD234C.jpg',
+'https://i.postimg.cc/sM7WmnVb/IMG-4991.jpg'];
+var PHRASES=[
+'Ты невероятно красивая сегодня ✨','Твоя улыбка — лучшее, что я видел 💖','Ты сияешь ярче любого солнца ☀️','Глаз не могу отвести — какая ты красавица 😍','Ты — настоящее чудо природы 🌸','Твоя красота завораживает 💫','С тобой каждый день как праздник 🎀','Ты самая очаровательная девушка на свете 🥰','Такая нежная, такая прекрасная 🌷','Ты затмеваешь все звёзды на небе ⭐','Твой взгляд просто сводит с ума 💘','Ты — идеал, и это не обсуждается 👑','Каждая твоя черта — произведение искусства 🎨','Ты выглядишь потрясающе, как всегда 💕','Ты красивее любого рассвета 🌅','Тебя невозможно не любить 💗','Ты делаешь этот мир прекраснее 🌍','Какая же ты притягательная и милая 🍓','Твоя красота — это магия ✨','Ты прекрасна и в улыбке, и в тишине 🌙','Ты — как цветок: нежная и неповторимая 🌹','Ты выглядишь как мечта 🦋','Ты сегодня ослепительна 🌟','Ты неотразима, и ты это знаешь 😉','Твоя красота греет лучше солнца ☀️','Ты — моя любимая звёздочка 🌠','Ты красавица, и точка 💎','Ты — моё маленькое чудо 🐣'];
+var EM=['❤️','💋','😘','💖','💕','😍','🥰','💗','💘','😚'];
+var now=new Date();
+var day=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000);
+function key(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+var today=key(now);
+var dates=JSON.parse(localStorage.getItem('dates')||'[]');
+function showPhoto(l){document.getElementById('photo').src=l[day%l.length]}fetch('https://api.github.com/repos/dedry66-dotcom/dlya-tebya/contents/').then(function(r){return r.json()}).then(function(f){var l=f.filter(function(x){return /\.(jpe?g|png|webp)$/i.test(x.name)}).map(function(x){return encodeURI(x.name)}).sort();showPhoto(l.length?l:PHOTOS)}).catch(function(){showPhoto(PHOTOS)});
+document.getElementById('phrase').textContent=PHRASES[(day*7)%PHRASES.length];
+for(var i=0;i<80;i++){var s=document.createElement('div');s.className='star';var z=1+Math.random()*2.5;s.style.cssText='left:'+Math.random()*100+'vw;top:'+Math.random()*100+'vh;width:'+z+'px;height:'+z+'px;animation-duration:'+(1+Math.random()*2)+'s;animation-delay:-'+Math.random()*3+'s';document.body.appendChild(s)}
+function setTheme(t){document.body.className=t;localStorage.setItem('theme',t);document.getElementById('theme').textContent=t=='dark'?'🌙 Тёмная':'☀️ Светлая'}
+setTheme(localStorage.getItem('theme')||'light');
+document.getElementById('theme').onclick=function(){setTheme(document.body.className=='dark'?'light':'dark')};
+function streak(){var n=0,d=new Date();if(dates.indexOf(key(d))<0)d.setDate(d.getDate()-1);while(dates.indexOf(key(d))>=0){n++;d.setDate(d.getDate()-1)}return n}
+function render(){var c=document.getElementById('check'),done=dates.indexOf(today)>=0;c.className=done?'done':'';c.textContent=done?'✓ Отмечено на сегодня 💖':'○ Отметить';document.getElementById('streak').textContent='🔥 '+streak()+' дн.'}
+render();
+document.getElementById('check').onclick=function(){
+if(dates.indexOf(today)<0){dates.push(today);localStorage.setItem('dates',JSON.stringify(dates))}
+render();
+for(var i=0;i<34;i++){(function(){var e=document.createElement('div');e.className='fly';e.textContent=EM[Math.floor(Math.random()*EM.length)];e.style.left=Math.random()*90+'vw';e.style.fontSize=(24+Math.random()*30)+'px';e.style.setProperty('--d',(2.2+Math.random()*1.8)+'s');e.style.setProperty('--x',((Math.random()-.5)*120)+'px');e.style.animationDelay=(Math.random()*.7)+'s';document.body.appendChild(e);setTimeout(function(){e.remove()},5000)})()}
+};
+</script>
+</body>
+</html>
